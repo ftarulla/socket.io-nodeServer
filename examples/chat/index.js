@@ -52,14 +52,18 @@ io.on('connection', function (socket) {
     //console.log(data);
 
     if (data.image) {
-      console.log("SAVING ...");
+      console.log("SAVING IMAGE...");
       var bitmap = new Buffer(data.image, 'base64');
       fs.writeFileSync('./bla.png', bitmap);
-      console.log("DONE!");
+      console.log("DONE SAVING!");
 
       //
+      console.log("NOW ... FASTING!");
       runPython(['./fast.py', 'bla.png'], function(result) {
+        console.log("DONE FASTING!");
         console.log(result);
+        // De la respuesta de Python buscamos los keypoints
+        // Están entre {}
         console.log(result.indexOf("{"));
         var parsed = JSON.parse( result.substring(result.indexOf("{")) );
         console.log(parsed.keypoints[42]);
@@ -67,7 +71,7 @@ io.on('connection', function (socket) {
         console.log("sending fast response");
         socket.emit('fast response', {
           username: socket.username,
-          message: parsed.keypoints[42]
+          message: parsed.keypoints
         });
 
       });
